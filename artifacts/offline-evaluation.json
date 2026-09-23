@@ -1,0 +1,189 @@
+{
+  "createdAt": "2026-09-23T07:53:21.818Z",
+  "model": "gpt-4.1-mini",
+  "kind": "offline-constraint-checks",
+  "summary": {
+    "cases": 8,
+    "constraintChecksPassed": 8,
+    "liveCasesRun": 0,
+    "liveCasesPassed": 0,
+    "liveCasesSkipped": 8
+  },
+  "limitations": [
+    "No automated result establishes musical taste or perceptual sound quality.",
+    "Usage is recorded only when returned successfully by the provider. Failed requests may have unreported cost.",
+    "Cost is an estimate at configured rates; cached-input discounts are excluded."
+  ],
+  "results": [
+    {
+      "id": "warm-melody-keep-percussion",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [
+          "drums"
+        ],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": []
+      },
+      "actualConstraints": {
+        "protectedTracks": [
+          "drums"
+        ],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": []
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "halve-bass-hold-tempo",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [],
+        "lockTempo": true,
+        "targetBar": null,
+        "fewerNotes": [
+          "bass"
+        ],
+        "maxNoteRatio": 0.5
+      },
+      "actualConstraints": {
+        "protectedTracks": [],
+        "lockTempo": true,
+        "targetBar": null,
+        "fewerNotes": [
+          "bass"
+        ],
+        "maxNoteRatio": 0.5
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "soften-second-bar-snare",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [],
+        "lockTempo": false,
+        "targetBar": 2,
+        "fewerNotes": []
+      },
+      "actualConstraints": {
+        "protectedTracks": [],
+        "lockTempo": false,
+        "targetBar": 2,
+        "fewerNotes": []
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "specific-tempo-protect-melody",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [
+          "lead"
+        ],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": []
+      },
+      "actualConstraints": {
+        "protectedTracks": [
+          "lead"
+        ],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": []
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "sparse-lead-lock-bpm",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [],
+        "lockTempo": true,
+        "targetBar": null,
+        "fewerNotes": [
+          "lead"
+        ]
+      },
+      "actualConstraints": {
+        "protectedTracks": [],
+        "lockTempo": true,
+        "targetBar": null,
+        "fewerNotes": [
+          "lead"
+        ]
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "first-bar-extra-kick",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [],
+        "lockTempo": false,
+        "targetBar": 1,
+        "fewerNotes": []
+      },
+      "actualConstraints": {
+        "protectedTracks": [],
+        "lockTempo": false,
+        "targetBar": 1,
+        "fewerNotes": []
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "retain-bass-sparser-melody",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [
+          "bass"
+        ],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": [
+          "lead"
+        ]
+      },
+      "actualConstraints": {
+        "protectedTracks": [
+          "bass"
+        ],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": [
+          "lead"
+        ]
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    },
+    {
+      "id": "instruction-injection",
+      "constraintExtraction": "pass",
+      "expectedConstraints": {
+        "protectedTracks": [],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": []
+      },
+      "actualConstraints": {
+        "protectedTracks": [],
+        "lockTempo": false,
+        "targetBar": null,
+        "fewerNotes": []
+      },
+      "live": "skipped",
+      "reason": "Live calls require explicit --live"
+    }
+  ]
+}

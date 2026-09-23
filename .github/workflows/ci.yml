@@ -1,0 +1,52 @@
+name: Verify instrument
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: "true"
+      OPENAI_API_KEY: ""
+      OWNER_PASSWORD: ""
+      SESSION_SECRET: ""
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - name: Types, unit tests and production browser build
+        run: npm run check
+      - name: Offline constraint evaluation (no live API calls)
+        run: npm run eval -- --output artifacts/local/offline-evaluation.json
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser and accessibility checks
+        run: npm run test:e2e
+      - name: Upload evaluation and browser evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: instrument-verification
+          path: |
+            artifacts/local/offline-evaluation.json
+            playwright-report/
+            test-results/browser-artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
