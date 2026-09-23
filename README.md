@@ -52,7 +52,7 @@ The app uses React/TypeScript, Express, Zod, Node's built-in SQLite, and direct 
 
 ## Hosting and design references
 
-[Deployment instructions](docs/deployment.md) provide a Docker image, persistent database volume and HTTPS reverse-proxy recipe. Production requires a password and session secret. This repository does not publish a live deployment automatically.
+[Vercel deployment](docs/vercel.md) is the lightweight hosted option: the client is emitted as a small static bundle and the API runs as one Node function in Singapore. The Vercel adapter does not use Vercel Blob, uploads or generated media. Its SQLite file lives in the function's temporary filesystem, so saves are suitable for a demo instance and are not a durable backup. Use the [Docker deployment](docs/deployment.md) recipe when persistent SQLite storage is required. Production requires a password and session secret.
 
 The visual direction draws on [Roland50 Studio](https://roland50.studio/) for instrument grouping, [Moog Mariana](https://software.moogmusic.com/store/mariana) for dimensional controls, the [OP–1 field](https://teenage.engineering/products/op-1) for industrial restraint, and [Ableton Learning Music](https://learningmusic.ableton.com/the-playground.html) for clear editing. VibeConductor's surfaces, SVG instruments, music and synthesis are original; no product imagery or third-party audio clips are bundled. Manrope and IBM Plex Mono are bundled through their font packages; their upstream license files are copied into [public/licenses](public/licenses/).
 

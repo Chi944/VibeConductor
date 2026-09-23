@@ -1,23 +1,23 @@
 import express from "express";
 import type { ErrorRequestHandler } from "express";
 import { z } from "zod";
-import { scoreSchema } from "../shared/score";
-import { constraintsSchema } from "../shared/edits";
-import type { HistoryEntry, Score } from "../shared/types";
-import { loadConfig, type ServerConfig } from "./config";
-import { CompositionStore } from "./database";
+import { scoreSchema } from "../shared/score.js";
+import { constraintsSchema } from "../shared/edits.js";
+import type { HistoryEntry, Score } from "../shared/types.js";
+import { loadConfig, type ServerConfig } from "./config.js";
+import { CompositionStore } from "./database.js";
 import {
   Conductor,
   createOpenAIProvider,
   type ConductProvider,
-} from "./conduct";
+} from "./conduct.js";
 import {
   constantTimeEqual,
   protectRequest,
   SessionStore,
   WindowLimiter,
-} from "./security";
-import { errorBody, HttpError } from "./errors";
+} from "./security.js";
+import { errorBody, HttpError } from "./errors.js";
 
 const requestIdSchema = z
   .string()

@@ -6,11 +6,11 @@ import {
   applyProposal,
   parseConstraints,
   proposalSchema,
-} from "../shared/edits";
-import { PRESETS } from "../shared/score";
-import type { ConductRequest, ConductResult } from "../shared/types";
-import type { ServerConfig } from "./config";
-import { errorBody, HttpError } from "./errors";
+} from "../shared/edits.js";
+import { PRESETS } from "../shared/score.js";
+import type { ConductRequest, ConductResult } from "../shared/types.js";
+import type { ServerConfig } from "./config.js";
+import { errorBody, HttpError } from "./errors.js";
 
 const trackId = z.enum(["drums", "bass", "lead"]);
 // A plain strict wire schema avoids sending runtime-only refinements to the API.

@@ -6,7 +6,7 @@ import {
   parseScore,
   PRESETS,
   trackIdSchema,
-} from "./score";
+} from "./score.js";
 import {
   TRACK_IDS,
   type EditConstraints,
@@ -14,7 +14,7 @@ import {
   type Note,
   type Score,
   type TrackId,
-} from "./types";
+} from "./types.js";
 
 export const constraintsSchema: z.ZodType<EditConstraints> = z
   .object({

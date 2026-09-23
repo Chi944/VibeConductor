@@ -2,8 +2,8 @@ import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { randomBytes } from "node:crypto";
-import type { Score, HistoryEntry, SavedComposition } from "../shared/types";
-import { HttpError } from "./errors";
+import type { Score, HistoryEntry, SavedComposition } from "../shared/types.js";
+import { HttpError } from "./errors.js";
 
 type CompositionRow = {
   id: string;

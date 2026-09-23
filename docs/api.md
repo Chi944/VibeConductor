@@ -1,6 +1,6 @@
 # Private server and API
 
-The Express process serves both the browser and API at `http://127.0.0.1:4310`. Development uses Vite middleware with database, credential and server source paths excluded from file serving; production serves `dist`. Node 24 or later is required for built-in SQLite. API keys are used only by the server. Live AI is deliberately unconfigured in this delivery.
+The Express process serves both the browser and API at `http://127.0.0.1:4310`. Development uses Vite middleware with database, credential and server source paths excluded from file serving; the standalone production process serves `dist`. The Vercel adapter serves the Vite output from its static deployment directory and exposes the same Express app through `api/[...path].ts`. Node 24 or later is required for built-in SQLite. API keys are used only by the server. Live AI is deliberately unconfigured in this delivery.
 
 ## Access and deployment
 

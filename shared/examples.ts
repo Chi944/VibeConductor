@@ -1,5 +1,5 @@
-import { DRUM_PITCHES, parseScore, PRESETS } from "./score";
-import type { Drum, Note, Score, Track, TrackId } from "./types";
+import { DRUM_PITCHES, parseScore, PRESETS } from "./score.js";
+import type { Drum, Note, Score, Track, TrackId } from "./types.js";
 
 export interface Example {
   id: string;

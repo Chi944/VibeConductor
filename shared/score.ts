@@ -5,7 +5,7 @@ import {
   type Scale,
   type Score,
   type TrackId,
-} from "./types";
+} from "./types.js";
 
 export const STEPS_PER_BAR = 16;
 export const DRUM_PITCHES: Record<Drum, number> = {
