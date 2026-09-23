@@ -20,12 +20,12 @@ vercel env add SESSION_SECRET production
 
 Paste each generated value only into the matching prompt. Leave `OPENAI_API_KEY` unset to keep live AI unconfigured. Vercel supplies `VERCEL_URL` and related deployment URLs automatically, so `APP_ORIGIN` is not required for this adapter.
 
-Build and deploy the exact artifact that was checked locally:
+Run the same Vercel build command locally when you want to inspect the static payload, then let Vercel build and deploy it in its Linux build environment:
 
 ```sh
 vercel pull --yes --environment=production
 npm run build:vercel
-vercel deploy --prebuilt --prod
+vercel deploy --prod
 ```
 
 The deployment output includes the production URL. The owner password protects authoring, saving and version endpoints; snapshot links remain readable by anyone who has the link.
