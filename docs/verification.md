@@ -7,18 +7,24 @@ Verification date: **2026-09-23**. Local checks used Windows, Node **24.19.0**, 
 | Check                         | Observed result                                                                                                      |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | TypeScript validation         | Passed with `tsc --noEmit`                                                                                           |
-| Unit/server tests             | **105 passed** across four files: 61 score/edit domain, 4 revision state, 20 audio coordination, and 20 server tests |
+| Unit/server tests             | **108 passed** across four files: 61 score/edit domain, 4 revision state, 23 audio coordination, and 20 server tests |
 | Production browser build      | Passed through `npm run build`, including the Linux Docker build stage                                               |
 | Offline conducting evaluation | **8/8 constraint checks passed; 0 live calls; 8 live cases skipped**                                                 |
-| Chromium browser suite        | **14/14 scenarios passed**, including both saved-load race regressions                                               |
+| Chromium browser suite        | **14/14 scenarios passed against the optimized frontend** (26.2s locally); the earlier development suite also passed |
 | Production container          | Build and local HTTP/persistence smoke checks passed                                                                 |
 | Live OpenAI evaluation        | Not run; the owner chose to leave credentials unconfigured                                                           |
 
 ## What the tests exercised
 
-The final `npm run check` completed with type checking, all 105 tests and a production browser build passing. The tracked [offline evaluation report](../artifacts/offline-evaluation.json) records all eight extraction checks and explicitly skipped live cases.
+The final `npm run check` completed with type checking, all 108 tests and a production browser build passing. The tracked [offline evaluation report](../artifacts/offline-evaluation.json) records all eight extraction checks and explicitly skipped live cases.
 
 The first Linux CI run exposed an audio timing interruption when opening Export after the delayed-response check. Its trace placed the interruption before the download, with the stale response already discarded. Two avoidable rendering costs were removed: fractional playhead updates that rerendered the studio every animation frame, and a full-surface backdrop blur. The display now updates only on changed integer steps. A unit regression covers this behavior, and three focused local browser repeats passed without changing the scheduler's 100 ms horizon or weakening the playback assertion. GitHub Actions retains the Linux run history and evidence for the pull request.
+
+Further review found an overly conservative timer-gap check: a late timer could stop playback during a rest even when no note deadline had been missed. The scheduler now checks actual unscheduled onsets and retains its 35 ms lateness limit; a whole missed incoming loop still stops bounded recovery. New regressions exercise rests, silent boundaries, actual missed notes and an hour-long simulated pause.
+
+The browser harness now builds and serves the optimized frontend through `--preview`, avoiding development React/Vite overhead while retaining all native-audio assertions. Failure traces retain DOM, source and network evidence; screenshots are taken on failure instead of continuously recording the moving instrument. Preview changes asset serving only: local loopback/authentication rules remain in force, and either `NODE_ENV=production` or `--production` continues to enforce all production credentials and HTTPS configuration.
+
+An isolated HTTP startup check on port 4334 verified that preview serves compiled `/assets/` files without a Vite client, retains Host and Origin guards, rejects a password-free non-loopback bind, and rejects missing production credentials for both production-selection paths. A correctly configured production preview remained signed out until login and issued a Secure session cookie.
 
 The unit suite validates score bounds, deterministic event compilation, JSON round trips, strict atomic edits, protected tracks, tempo/bar scope, note-count constraints, and rejection of stale revisions. Revision tests cover delayed responses, pending Undo, and normalization of recovered history whose final version differs from the current score. The 20 server tests cover owner sessions, logout revocation, CSRF/Host protection, login throttling, safe Vite file access, validated history saves, real SQLite close/reopen, immutable snapshots, absent credentials, malicious proposals, timeouts, cancellation and idempotency.
 
@@ -55,6 +61,6 @@ npm run test:e2e
 docker build -t vibeconductor:verification .
 ```
 
-On Linux CI, Playwright installation uses `--with-deps`. The browser suite starts its own credential-free server on port 4321. Local HTML results are written to `playwright-report/`; failed-test traces/screenshots and accessibility attachments are under `test-results/browser-artifacts/`. The GitHub workflow uploads those outputs with the offline evaluation report. All live model evaluation requires an explicit `--live` invocation and deliberately configured credentials; see [evaluation.md](evaluation.md).
+On Linux CI, Playwright installation uses `--with-deps`. `npm run test:e2e` rebuilds the optimized frontend, and the browser suite starts its own credential-free preview server on port 4321. This verifies production browser assets with local server access rules; production authentication is separately covered by the server and container checks. Local HTML results are written to `playwright-report/`; failed-test traces/screenshots and accessibility attachments are under `test-results/browser-artifacts/`. The GitHub workflow uploads those outputs with the offline evaluation report. All live model evaluation requires an explicit `--live` invocation and deliberately configured credentials; see [evaluation.md](evaluation.md).
 
 No live model accuracy, model latency, provider token usage or paid cost was measured. No human listening session, subjective musical-quality study, physical-device latency measurement, Safari/Firefox run or real mobile-device test is claimed. The delivered evidence supports the implemented playback, editing, persistence and validation behavior within the environments and scenarios above.

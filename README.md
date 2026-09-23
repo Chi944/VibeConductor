@@ -32,18 +32,21 @@ The score remains inspectable throughout. Accepted AI edits are explanations plu
 
 ## Development and verification
 
-| Command                           | Purpose                                                       |
-| --------------------------------- | ------------------------------------------------------------- |
-| `npm run dev`                     | Express + Vite at port 4310                                   |
-| `npm run check`                   | Type checking, unit/server tests, production browser build    |
-| `npm run test:watch`              | Watch unit tests                                              |
-| `npx playwright install chromium` | Install the browser used by end-to-end tests                  |
-| `npm run test:e2e`                | Isolated Chromium browser checks on port 4321                 |
-| `npm run eval`                    | Eight offline constraint checks; no paid calls                |
-| `npm run build`                   | Type check and build `dist`                                   |
-| `npm start`                       | Production server; requires owner secrets and an HTTPS origin |
+| Command                           | Purpose                                                            |
+| --------------------------------- | ------------------------------------------------------------------ |
+| `npm run dev`                     | Express + Vite at port 4310                                        |
+| `npm run check`                   | Type checking, unit/server tests, production browser build         |
+| `npm run test:watch`              | Watch unit tests                                                   |
+| `npx playwright install chromium` | Install the browser used by end-to-end tests                       |
+| `npm run test:e2e`                | Build the frontend, then run isolated Chromium checks on port 4321 |
+| `npm run eval`                    | Eight offline constraint checks; no paid calls                     |
+| `npm run build`                   | Type check and build `dist`                                        |
+| `npm run preview`                 | Serve the existing `dist` locally under normal local access rules  |
+| `npm start`                       | Production server; requires owner secrets and an HTTPS origin      |
 
-CI runs the same checks without any API credential and retains its evaluation/browser artifacts. The mocked AI tests establish validation and failure handling, not live model quality. Live model evaluation is deliberately opt-in; its status and limitations are described in [docs/evaluation.md](docs/evaluation.md).
+Run `npm run build` before `npm run preview`. Preview serves the optimized browser bundle without Vite's development middleware; it defaults to loopback-only local access. Setting `NODE_ENV=production` or passing `--production` still requires the production password, session secret and HTTPS origin, even if `--preview` is present.
+
+CI runs the same checks without any API credential and retains its evaluation/browser artifacts. Browser tests exercise the optimized frontend with local server access rules. The mocked AI tests establish validation and failure handling, not live model quality. Live model evaluation is deliberately opt-in; its status and limitations are described in [docs/evaluation.md](docs/evaluation.md).
 
 The app uses React/TypeScript, Express, Zod, Node's built-in SQLite, and direct Web Audio. The score schema and pure editing functions are shared between client and server. There are no accounts, collaboration service, sample downloads or background generation jobs.
 

@@ -11,12 +11,18 @@ export default defineConfig({
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://127.0.0.1:4321",
-    trace: "retain-on-failure",
+    // Keep DOM/network evidence without rasterizing the moving instrument every frame.
+    trace: {
+      mode: "retain-on-failure",
+      screenshots: false,
+      snapshots: true,
+      sources: true,
+    },
     screenshot: "only-on-failure",
     ...devices["Desktop Chrome"],
   },
   webServer: {
-    command: "node --import tsx server/index.ts",
+    command: "node --import tsx server/index.ts --preview",
     url: "http://127.0.0.1:4321/api/session",
     timeout: 60_000,
     reuseExistingServer: false,

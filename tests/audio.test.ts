@@ -261,7 +261,53 @@ describe("audio-clock revision scheduling", () => {
     ).toEqual(["restarted"]);
   });
 
-  it("stops safely after timer starvation instead of bursting missed notes", () => {
+  it("continues after a delayed timer during a rest when no note deadline was missed", () => {
+    const sim = simulation();
+    sim.advance(0.075);
+    sim.timeline.tick(0.5);
+    expect(sim.timeline.playing).toBe(true);
+    sim.timeline.tick(0.975);
+    expect(
+      sim.events
+        .filter((event) => event.noteId === "lead-8")
+        .map((event) => event.when),
+    ).toEqual([1.05]);
+    expect(sim.underrun).not.toHaveBeenCalled();
+  });
+
+  it("announces a silent boundary passed during a timer delay before the next note is due", () => {
+    const silent = score();
+    silent.tracks.forEach((track) => {
+      track.notes = [];
+    });
+    const next = score("late-rest");
+    next.tracks.forEach((track) => {
+      track.notes = track.notes.filter((note) => note.start === 8);
+    });
+    const sim = simulation(silent);
+    sim.timeline.queue(next, sim.now);
+    sim.advance(1.9);
+    sim.timeline.tick(2.5);
+    expect(sim.timeline.playing).toBe(true);
+    expect(sim.heardLoops.at(-1)!.revision).toBe("late-rest");
+    expect(sim.underrun).not.toHaveBeenCalled();
+  });
+
+  it("bounds recovery after a whole missed silent loop instead of creating unbounded plans", () => {
+    const silent = score();
+    silent.tracks.forEach((track) => {
+      track.notes = [];
+    });
+    const sim = simulation(silent);
+    sim.advance(0.1);
+    sim.timeline.tick(3600);
+    expect(sim.timeline.playing).toBe(false);
+    expect(sim.heardLoops).toHaveLength(1);
+    expect(sim.events).toHaveLength(0);
+    expect(sim.underrun).toHaveBeenCalledOnce();
+  });
+
+  it("stops safely after an actual missed note deadline instead of bursting missed notes", () => {
     const sim = simulation();
     sim.advance(0.2);
     sim.timeline.tick(1.5);

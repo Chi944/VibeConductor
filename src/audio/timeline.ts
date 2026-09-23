@@ -33,7 +33,6 @@ export class AudioTimeline {
   private candidate: { score: Score; atTime: number } | null = null;
   private serial = 0;
   private running = false;
-  private scheduledThrough = 0;
 
   constructor(
     private readonly callbacks: TimelineCallbacks,
@@ -60,7 +59,6 @@ export class AudioTimeline {
     this.running = true;
     this.candidate = null;
     this.loops = [this.makeLoop(score, now + 0.05)];
-    this.scheduledThrough = now;
     this.tick(now);
   }
 
@@ -122,24 +120,24 @@ export class AudioTimeline {
 
   tick(now: number) {
     if (!this.running) return;
-    // A starved main thread cannot safely play an already-missed musical event.
-    if (
-      now > this.scheduledThrough + 0.035 &&
-      this.scheduledThrough > this.loops[0]!.startTime
-    ) {
+    let tail = this.loops[this.loops.length - 1]!;
+    // A timer may wake late during a rest without missing any musical event.
+    // Check actual note deadlines below; only a whole missed incoming loop
+    // forces a reset here, bounding catch-up work after an arbitrarily long pause.
+    const incomingSeconds = loopSeconds(this.candidate?.score ?? tail.score);
+    if (now >= tail.endTime + incomingSeconds) {
       this.stop(now);
       this.callbacks.underrun();
       return;
     }
-    this.announce(now);
     const horizon = now + this.horizon;
-    let tail = this.loops[this.loops.length - 1]!;
     while (tail.endTime <= horizon) {
       const score = this.candidate?.score ?? tail.score;
       this.candidate = null;
       tail = this.makeLoop(score, tail.endTime);
       this.loops.push(tail);
     }
+    this.announce(now);
     for (const loop of this.loops) {
       const stepSeconds = 60 / loop.score.bpm / 4;
       while (loop.cursor < loop.events.length) {
@@ -160,7 +158,6 @@ export class AudioTimeline {
         loop.cursor++;
       }
     }
-    this.scheduledThrough = horizon;
     // Keep the sounding loop until its successor actually begins.
     while (this.loops.length > 1 && this.loops[1]!.startTime <= now)
       this.loops.shift();
