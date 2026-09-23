@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "types": ["node", "vite/client"]
+    "types": []
   },
-  "include": ["src", "shared", "server", "tests", "scripts", "*.ts"]
+  "include": ["src", "shared", "server", "api", "tests", "scripts", "*.ts"]
 }

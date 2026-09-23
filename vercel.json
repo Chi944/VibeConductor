@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm ci --include=dev",
+  "buildCommand": "npm run build:vercel",
+  "outputDirectory": "vercel-static",
+  "regions": ["sin1"],
+  "rewrites": [{ "source": "/s/:path*", "destination": "/index.html" }],
+  "functions": {
+    "api/[...path].ts": {
+      "maxDuration": 25,
+      "supportsCancellation": true
+    }
+  }
+}

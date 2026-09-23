@@ -5,9 +5,9 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 import type { Request, Response, NextFunction } from "express";
-import type { ServerConfig } from "./config";
-import { isLoopback } from "./config";
-import { HttpError } from "./errors";
+import type { ServerConfig } from "./config.js";
+import { isLoopback } from "./config.js";
+import { HttpError } from "./errors.js";
 
 const COOKIE = "vibeconductor_session";
 const SESSION_MS = 12 * 60 * 60 * 1000;

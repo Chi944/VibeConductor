@@ -1,5 +1,8 @@
 node_modules/
 dist/
+vercel-static/
+public/assets/
+public/index.html
 .env
 .env.*
 !.env.example
@@ -10,3 +13,5 @@ playwright-report/
 *.log
 .DS_Store
 artifacts/local/
+
+.vercel

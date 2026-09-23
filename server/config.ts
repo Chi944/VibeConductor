@@ -78,9 +78,18 @@ export function loadConfig(
   }
   if (!ownerPassword && !isLoopback(host))
     throw new Error("Password-free mode must bind to a loopback IP address.");
-  if (production && !env.APP_ORIGIN)
+  const platformHosts = [
+    env.VERCEL_URL,
+    env.VERCEL_BRANCH_URL,
+    env.VERCEL_PROJECT_PRODUCTION_URL,
+  ].filter((value): value is string => !!value);
+  const platformOrigins = platformHosts.map((host) => `https://${host}`);
+  const configuredOrigin =
+    env.APP_ORIGIN ||
+    (production && env.VERCEL === "1" ? platformOrigins[0] : undefined);
+  if (production && !configuredOrigin)
     throw new Error("Production requires an https APP_ORIGIN.");
-  const originUrl = new URL(env.APP_ORIGIN || `http://127.0.0.1:${port}`);
+  const originUrl = new URL(configuredOrigin || `http://127.0.0.1:${port}`);
   if (
     !["http:", "https:"].includes(originUrl.protocol) ||
     originUrl.username ||
@@ -101,7 +110,7 @@ export function loadConfig(
   ) {
     throw new Error("Password-free mode cannot use an external APP_ORIGIN.");
   }
-  const allowedOrigins = new Set([originUrl.origin]);
+  const allowedOrigins = new Set([originUrl.origin, ...platformOrigins]);
   if (!production && isLoopback(host)) {
     allowedOrigins.add(`http://127.0.0.1:${port}`);
     allowedOrigins.add(`http://localhost:${port}`);
@@ -124,7 +133,11 @@ export function loadConfig(
     localMode: !production && !ownerPassword && isLoopback(host),
     ownerPassword,
     sessionSecret: sessionSecret || randomBytes(32).toString("hex"),
-    databasePath: env.DATABASE_PATH || resolve("data/vibeconductor.sqlite"),
+    databasePath:
+      env.DATABASE_PATH ||
+      (env.VERCEL === "1"
+        ? "/tmp/vibeconductor.sqlite"
+        : resolve("data/vibeconductor.sqlite")),
     apiKey: env.OPENAI_API_KEY || "",
     model,
     inputPricePerMillion: optionalPrice(
