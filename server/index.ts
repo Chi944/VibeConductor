@@ -1,5 +1,5 @@
 import { config as loadEnvironment } from "dotenv";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { createServer } from "node:http";
 import express from "express";
@@ -28,10 +28,25 @@ if (serveBuiltAssets) {
   });
 } else {
   const { createServer: createViteServer } = await import("vite");
+  const databaseFile = resolve(config.databasePath);
   const vite = await createViteServer({
     server: {
       middlewareMode: true,
       hmr: { server },
+      watch: {
+        // Generated reports and live SQLite journals are not frontend source.
+        ignored: (file) => {
+          const local = relative(process.cwd(), file).replaceAll("\\", "/");
+          const absolute = resolve(file);
+          return (
+            /^(data|artifacts|test-results|playwright-report|coverage)(\/|$)/.test(
+              local,
+            ) ||
+            absolute === databaseFile ||
+            absolute.startsWith(`${databaseFile}-`)
+          );
+        },
+      },
       fs: { deny: developmentDenyList(config.databasePath) },
     },
     appType: "spa",
