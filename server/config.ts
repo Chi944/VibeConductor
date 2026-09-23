@@ -70,10 +70,10 @@ export function loadConfig(
   const sessionSecret = env.SESSION_SECRET || "";
   if (
     (production || ownerPassword) &&
-    (ownerPassword.length < 16 || sessionSecret.length < 32)
+    (!ownerPassword || ownerPassword.length > 1024 || sessionSecret.length < 32)
   ) {
     throw new Error(
-      "Owner mode requires OWNER_PASSWORD (16+ characters) and SESSION_SECRET (32+ characters).",
+      "Owner mode requires OWNER_PASSWORD (1–1024 characters) and SESSION_SECRET (32+ characters).",
     );
   }
   if (!ownerPassword && !isLoopback(host))
