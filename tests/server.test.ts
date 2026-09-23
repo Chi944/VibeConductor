@@ -214,11 +214,11 @@ describe("server configuration and private access", () => {
       ).status,
     ).toBe(401);
   });
-  it("issues secure cookies for a correctly configured HTTPS deployment", async () => {
+  it("accepts an owner-chosen short password in production and issues a working secure session", async () => {
     const conf = config({
       NODE_ENV: "production",
       APP_ORIGIN: "https://instrument.example",
-      OWNER_PASSWORD: "correct-password-for-testing",
+      OWNER_PASSWORD: "test",
       SESSION_SECRET: "s".repeat(40),
     });
     const { app } = setup({ config: conf });
@@ -229,10 +229,25 @@ describe("server configuration and private access", () => {
         Host: "instrument.example",
         Origin: "https://instrument.example",
       })
-      .send({ password: "correct-password-for-testing" });
+      .send({ password: "test" });
     expect(login.status).toBe(200);
     expect(login.headers["set-cookie"][0]).toContain("Secure");
     expect(login.headers["strict-transport-security"]).toContain("max-age");
+    const cookie = login.headers["set-cookie"][0].split(";")[0];
+    const session = await request(app)
+      .get("/api/session")
+      .set("Host", "instrument.example")
+      .set("Cookie", cookie);
+    expect(session.body.authenticated).toBe(true);
+    const rejected = await request(app)
+      .post("/api/login")
+      .set({
+        ...headers,
+        Host: "instrument.example",
+        Origin: "https://instrument.example",
+      })
+      .send({ password: "wrong" });
+    expect(rejected.status).toBe(401);
   });
   it("throttles failed logins", async () => {
     const { app } = setup({

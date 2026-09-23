@@ -6,7 +6,7 @@ The Docker image was built and exercised locally on 2026-09-23: private login, s
 
 ## Configuration
 
-Production requires `OWNER_PASSWORD` (16+ characters), `SESSION_SECRET` (32+ characters) and the exact public HTTPS `APP_ORIGIN`. For example, use `https://instrument.example.com`, without a path. The server refuses to start with invalid configuration. `npm start` activates these requirements even on a local machine.
+Production requires a nonempty `OWNER_PASSWORD` (up to 1024 characters), `SESSION_SECRET` (32+ characters) and the exact public HTTPS `APP_ORIGIN`. For example, use `https://instrument.example.com`, without a path. The server refuses to start with invalid configuration. `npm start` activates these requirements even on a local machine.
 
 Create a local `.env.production` once. The following commands generate random secrets directly into the ignored file, do not print them, and refuse to overwrite an existing file. Open the file in a trusted local editor, replace the example domain, and put the generated owner password in your password manager. Leave `OPENAI_API_KEY` empty to keep live AI disabled.
 
