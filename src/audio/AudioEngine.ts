@@ -19,6 +19,7 @@ export interface SoundingNote {
 export interface AudioCallbacks {
   onLoop?(score: Score): void;
   onNote?(event: SoundingNote): void;
+  /** Integer display step, emitted only when it changes during playback. */
   onPosition?(step: number): void;
   onStop?(reason: string): void;
 }
@@ -51,6 +52,7 @@ export class AudioEngine {
   private visualEvents: VisualEvent[] = [];
   private timer: ReturnType<typeof setInterval> | null = null;
   private frame: number | null = null;
+  private displayedStep = -1;
   private mixer: Score | null = null;
   private masterVolume = DEFAULT_MASTER;
   private masterMuted = false;
@@ -158,6 +160,7 @@ export class AudioEngine {
       context.currentTime + 0.012,
     );
     this.timeline.start(initialScore, context.currentTime);
+    this.displayedStep = -1;
     this.timer = setInterval(() => this.timeline.tick(context.currentTime), 25);
     this.draw();
   }
@@ -172,6 +175,7 @@ export class AudioEngine {
     if (this.frame !== null) cancelAnimationFrame(this.frame);
     this.timer = null;
     this.frame = null;
+    this.displayedStep = -1;
     this.visualEvents = [];
     if (this.transport) ramp(this.transport.gain, 0, now, 0.008);
     // Include voices from a preceding loop whose tiny release has not yet ended.
@@ -284,7 +288,11 @@ export class AudioEngine {
         this.callbacks.onNote?.(event.note);
       }
     }
-    this.callbacks.onPosition?.(this.timeline.position(now));
+    const step = Math.floor(this.timeline.position(now));
+    if (step !== this.displayedStep) {
+      this.displayedStep = step;
+      this.callbacks.onPosition?.(step);
+    }
     this.frame = requestAnimationFrame(this.draw);
   };
 

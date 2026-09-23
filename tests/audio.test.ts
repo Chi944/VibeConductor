@@ -368,13 +368,18 @@ function engineHarness() {
   const context = new FakeContext();
   const onNote = vi.fn();
   const onStop = vi.fn();
+  const onPosition = vi.fn();
   const createContext = vi.fn(() => context as unknown as AudioContext);
-  const engine = new AudioEngine({ onNote, onStop }, { createContext });
+  const engine = new AudioEngine(
+    { onNote, onStop, onPosition },
+    { createContext },
+  );
   return {
     engine,
     context,
     onNote,
     onStop,
+    onPosition,
     createContext,
     draw(now: number) {
       context.currentTime = now;
@@ -391,6 +396,22 @@ afterEach(() => {
 });
 
 describe("source ownership and display clock", () => {
+  it("updates the playhead only when the audible integer step changes", async () => {
+    const h = engineHarness();
+    await h.engine.start(score());
+    for (const now of [0.025, 0.05, 0.08, 0.12, 0.17]) h.draw(now);
+    expect(h.onPosition.mock.calls.map((call) => call[0])).toEqual([0]);
+    h.draw(0.176);
+    h.draw(0.2);
+    h.draw(0.24);
+    expect(h.onPosition.mock.calls.map((call) => call[0])).toEqual([0, 1]);
+    h.engine.stop();
+    expect(h.onPosition.mock.calls.at(-1)![0]).toBe(0);
+    await h.engine.start(score());
+    expect(h.onPosition.mock.calls.at(-1)![0]).toBe(0);
+    h.engine.dispose();
+  });
+
   it("creates audio only on Play and draws note activity only at audio onset", async () => {
     const h = engineHarness();
     expect(h.createContext).not.toHaveBeenCalled();

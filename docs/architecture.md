@@ -43,7 +43,7 @@ Volume, mute and solo travel through immediate ramped track mixer gates. Master 
 
 The synthesis graph is track voices → track gains → transport gate → master/headroom → compressor → destination. Kick uses an oscillator pitch drop; snare combines filtered seeded noise and a tonal component; hi-hat uses filtered noise. Bass and lead use oscillators, filters and short envelopes. Presets select waveform/shape choices, with persisted brightness and decay controls. Sustains end by the loop end; very short release crossfades avoid hard discontinuities.
 
-Instrument animation consumes scheduled note events only after the audio clock reaches their onset, with current mute/solo/master gates respected. Animation is a visual follower and may lag under rendering load without moving musical events.
+Instrument animation consumes scheduled note events only after the audio clock reaches their onset, with current mute/solo/master gates respected. Animation is a visual follower and may lag under rendering load without moving musical events. The playhead notifies React only when the integer step changes, avoiding a full studio render on every animation frame. Dialogs dim the studio without blurring the moving instrument surface.
 
 ## Editing, recovery and conducting
 

@@ -1474,7 +1474,6 @@ a {
 }
 .dialog::backdrop {
   background: #1a251c88;
-  backdrop-filter: blur(5px);
 }
 .dialog-head {
   display: flex;

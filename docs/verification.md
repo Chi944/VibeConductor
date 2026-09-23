@@ -7,16 +7,18 @@ Verification date: **2026-09-23**. Local checks used Windows, Node **24.19.0**, 
 | Check                         | Observed result                                                                                                      |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | TypeScript validation         | Passed with `tsc --noEmit`                                                                                           |
-| Unit/server tests             | **104 passed** across four files: 61 score/edit domain, 4 revision state, 19 audio coordination, and 20 server tests |
+| Unit/server tests             | **105 passed** across four files: 61 score/edit domain, 4 revision state, 20 audio coordination, and 20 server tests |
 | Production browser build      | Passed through `npm run build`, including the Linux Docker build stage                                               |
 | Offline conducting evaluation | **8/8 constraint checks passed; 0 live calls; 8 live cases skipped**                                                 |
-| Chromium browser suite        | **14/14 scenarios passed in 34.1s**, including both saved-load race regressions                                      |
+| Chromium browser suite        | **14/14 scenarios passed**, including both saved-load race regressions                                               |
 | Production container          | Build and local HTTP/persistence smoke checks passed                                                                 |
 | Live OpenAI evaluation        | Not run; the owner chose to leave credentials unconfigured                                                           |
 
 ## What the tests exercised
 
-The final `npm run check` completed with type checking, all 104 tests and a production browser build passing. The tracked [offline evaluation report](../artifacts/offline-evaluation.json) records all eight extraction checks and explicitly skipped live cases.
+The final `npm run check` completed with type checking, all 105 tests and a production browser build passing. The tracked [offline evaluation report](../artifacts/offline-evaluation.json) records all eight extraction checks and explicitly skipped live cases.
+
+The first Linux CI run exposed an audio timing interruption when opening Export after the delayed-response check. Its trace placed the interruption before the download, with the stale response already discarded. Two avoidable rendering costs were removed: fractional playhead updates that rerendered the studio every animation frame, and a full-surface backdrop blur. The display now updates only on changed integer steps. A unit regression covers this behavior, and three focused local browser repeats passed without changing the scheduler's 100 ms horizon or weakening the playback assertion. GitHub Actions retains the Linux run history and evidence for the pull request.
 
 The unit suite validates score bounds, deterministic event compilation, JSON round trips, strict atomic edits, protected tracks, tempo/bar scope, note-count constraints, and rejection of stale revisions. Revision tests cover delayed responses, pending Undo, and normalization of recovered history whose final version differs from the current score. The 20 server tests cover owner sessions, logout revocation, CSRF/Host protection, login throttling, safe Vite file access, validated history saves, real SQLite close/reopen, immutable snapshots, absent credentials, malicious proposals, timeouts, cancellation and idempotency.
 
